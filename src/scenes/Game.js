@@ -2,10 +2,7 @@ import Phaser from 'phaser'
 
 import ScrollingBackground from '../utils/ScrollingBackground'
 import Player from '../sprites/Player'
-
-var bulletTime = 0
-var firingTimer = 0
-var livingEnemies = []
+import Enemy from '../sprites/Enemy'
 
 export default class extends Phaser.Scene {
   constructor () {
@@ -13,6 +10,13 @@ export default class extends Phaser.Scene {
   }
 
   create () {
+    this.anims.create({
+      key: 'sprExplosion',
+      frames: this.anims.generateFrameNumbers('sprExplosion'),
+      frameRate: 20,
+      repeat: 0
+    })
+
     this.enemies = this.add.group()
     this.enemyLasers = this.add.group()
     this.playerLasers = this.add.group()
@@ -39,6 +43,63 @@ export default class extends Phaser.Scene {
     this.keySpace = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE
     )
+
+    this.time.addEvent({
+      delay: 1000,
+      callback: function () {
+        var enemy = null
+
+        if (Phaser.Math.Between(0, 10) >= 3) {
+          enemy = new Enemy(
+            this,
+            Phaser.Math.Between(0, this.game.config.width),
+            0
+          )
+        }
+
+        if (enemy !== null) {
+          enemy.setScale(Phaser.Math.Between(10, 20) * 0.1)
+          this.enemies.add(enemy)
+        }
+      },
+      callbackScope: this,
+      loop: true
+    })
+
+    this.physics.add.collider(this.playerLasers, this.enemies, function (
+      playerLaser,
+      enemy
+    ) {
+      if (enemy) {
+        if (enemy.onDestroy !== undefined) {
+          enemy.onDestroy()
+        }
+        enemy.explode(true)
+        playerLaser.destroy()
+      }
+    })
+
+    this.physics.add.overlap(this.player, this.enemies, function (
+      player,
+      enemy
+    ) {
+      if (!player.getData('isDead') && !enemy.getData('isDead')) {
+        player.explode(false)
+        player.onDestroy()
+        enemy.explode(true)
+      }
+    })
+
+    this.physics.add.overlap(this.player, this.enemyLasers, function (
+      player,
+      laser
+    ) {
+      if (!player.getData('isDead') && !laser.getData('isDead')) {
+        player.explode(false)
+        player.onDestroy()
+        laser.destroy()
+      }
+    })
   }
 
   update () {

@@ -9,10 +9,17 @@ export default class extends Phaser.Scene {
     //
     // load your assets
     //
-    this.load.image('enemy', './assets/images/enemy.png')
+    this.load.spritesheet('sprExplosion', 'assets/images/sprExplosion.png', {
+      frameWidth: 32,
+      frameHeight: 32
+    })
+    this.load.spritesheet('enemy', 'assets/images/sprEnemy0.png', {
+      frameWidth: 16,
+      frameHeight: 16
+    })
     this.load.image('heart', './assets/images/heart.png')
     this.load.image('bullet', './assets/images/bullet.png')
-    this.load.image('player', './assets/images/ship.png')
+    this.load.image('player', './assets/images/player.png')
 
     this.load.image('enemyBullet', 'assets/images/enemy-bullet.png')
 

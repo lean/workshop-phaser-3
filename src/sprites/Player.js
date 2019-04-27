@@ -6,11 +6,7 @@ import PlayerLaser from './PlayerLaser'
 export default class Player extends Entity {
   constructor (scene, x, y, key) {
     super(scene, x, y, key, 'Player')
-
-    this.setScale(0.3)
-
     this.setData('speed', 200)
-
     this.setData('isShooting', false)
     this.setData('timerShootDelay', 10)
     this.setData('timerShootTick', this.getData('timerShootDelay') - 1)
